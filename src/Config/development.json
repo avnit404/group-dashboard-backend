@@ -1,0 +1,20 @@
+{
+  "jwt": {
+    "secret": "catchingupwithussupersecret"
+  },
+  "secretKey": "abcdefghijklmnop",
+  "databases": {
+    "host": "sql6.freemysqlhosting.net",
+    "db": "sql6687608",
+    "username": "sql6687608",
+    "password": "jm1PvU7H11",
+    "port": 3306,
+    "dialect": "mysql",
+    "pool": {
+      "max": 5,
+      "min": 0,
+      "acquire": 30000,
+      "idle": 10000
+    }
+  }
+}
