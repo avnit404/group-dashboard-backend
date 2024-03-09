@@ -10,11 +10,11 @@ module.exports = (sequelize, Sequelize) => {
             allowNull: false,
         },
         table: {
-            type: Sequelize.STRING,
+            type: Sequelize.TEXT('long'),
             allowNull: true,
         },
         column: {
-            type: Sequelize.STRING,
+            type: Sequelize.TEXT('long'),
             allowNull: true,
         },
     }, {
