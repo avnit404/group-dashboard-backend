@@ -5,9 +5,9 @@
   "secretKey": "abcdefghijklmnop",
   "databases": {
     "host": "sql6.freemysqlhosting.net",
-    "db": "sql6687608",
-    "username": "sql6687608",
-    "password": "jm1PvU7H11",
+    "db": "sql6691796",
+    "username": "sql6691796",
+    "password": "NCV3B1pXHr",
     "port": 3306,
     "dialect": "mysql",
     "pool": {

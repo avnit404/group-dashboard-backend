@@ -7,7 +7,7 @@ app.use(cors());
 
 app.use(express.json())
 
-const PORT = 3001
+const PORT = 3002
 
 app.use("/group", groupRoutes)
 app.get('/', function (req, res) {
