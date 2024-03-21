@@ -192,8 +192,8 @@ exports.getColumnByTable = async (req, res) => {
             throw new Error('Table not found in group');
         }
         const columnsData = JSON.parse(group.column);
-        const filteredColumns = columnsData.filter(column => tables.includes(column.table));
-        const selectedColumns = filteredColumns.map(obj => Object.keys(obj)[0]);
+        const filteredColumns = columnsData.filter(column => column.table === tableName);
+        const selectedColumns = filteredColumns.map(obj => Object.entries(obj)[0]);
         let tableData = {}
         let tableRows;
         if (tableName === "Admin") {
@@ -204,6 +204,47 @@ exports.getColumnByTable = async (req, res) => {
             tableRows = await Manager.findAll({ attributes: selectedColumns });
         }
         tableData[tableName] = tableRows
+        return res.status(200).json({ tableData });
+    } catch (error) {
+        return res.status(400).json({ error: error.message });
+    }
+};
+
+exports.getSelectedColumn = async (req, res) => {
+    try {
+        const { groupId, tableName, columnName } = req.params;
+    
+        const group = await Group.findOne({ where: { id: groupId } });
+        if (!group) {
+            throw new Error('Group not found');
+        }
+
+         const tables = JSON.parse(group.table);
+        if (!tables.includes(tableName)) {
+            throw new Error('Table not found in group');
+        }
+        const columnsData = JSON.parse(group.column);
+        const filteredColumns = columnsData.filter(column => column.table === tableName);
+        let columnValue;
+        for (const obj of filteredColumns) {
+            const key = Object.keys(obj)[0];
+            if (obj[key] === columnName) {
+                columnValue = key;
+              break;
+            }
+          }
+        let tableData = {};
+        let tableRows;
+        
+        if (tableName === "Admin") {
+            tableRows = await Admin.findAll({ attributes: [columnValue] });
+        } else if (tableName === "Employee") {
+            tableRows = await Employee.findAll({ attributes: [columnValue] });
+        } else if (tableName === "Manager") {
+            tableRows = await Manager.findAll({ attributes: [columnValue] });
+        }
+        
+        tableData[tableName] = tableRows;
         return res.status(200).json({ tableData });
     } catch (error) {
         return res.status(400).json({ error: error.message });

@@ -11,7 +11,8 @@ router.get("/employee",groupController.getEmployees);
 router.get("/manager",groupController.getEmployees);
 // router.get('/table/:tableName/columns', groupController.getTableColumns)
 router.get('/:groupId', groupController.getTableColumns);
-router.get('/:groupId/tables/:tableName/columns/:columnId', groupController.getColumnById)
+// router.get('/:groupId/tables/:tableName/columns/:columnId', groupController.getColumnById)
 router.get('/:groupId/tables/:tableName/columns', groupController.getColumnByTable)
-router.delete('/:groupId/tables/:tableName/columns/:columnId', groupController.deleteColumnById)
+router.get('/:groupId/tables/:tableName/columns/:columnName', groupController.getSelectedColumn)
+// router.delete('/:groupId/tables/:tableName/columns/:columnId', groupController.deleteColumnById)
 module.exports = router;
