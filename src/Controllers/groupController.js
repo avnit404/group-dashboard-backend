@@ -133,9 +133,9 @@ exports.getTableColumns = async (req, res) => {
             })
             tableData[tableName] = tableRows;
         }
-
         return res.status(200).json({ tableData });
     } catch (error) {
+        console.info(error);
         return res.status(400).json({ error: error.message });
     }
 };
@@ -193,7 +193,7 @@ exports.getColumnByTable = async (req, res) => {
         }
         const columnsData = JSON.parse(group.column);
         const filteredColumns = columnsData.filter(column => column.table === tableName);
-        const selectedColumns = filteredColumns.map(obj => Object.entries(obj)[0]);
+        const selectedColumns = filteredColumns.map(obj => Object.keys(obj)[0]);
         let tableData = {}
         let tableRows;
         if (tableName === "Admin") {
@@ -213,37 +213,89 @@ exports.getColumnByTable = async (req, res) => {
 exports.getSelectedColumn = async (req, res) => {
     try {
         const { groupId, tableName, columnName } = req.params;
-    
+        const payload = req.body.column
         const group = await Group.findOne({ where: { id: groupId } });
         if (!group) {
             throw new Error('Group not found');
         }
-
-         const tables = JSON.parse(group.table);
+        const tables = JSON.parse(group.table);
         if (!tables.includes(tableName)) {
             throw new Error('Table not found in group');
         }
         const columnsData = JSON.parse(group.column);
         const filteredColumns = columnsData.filter(column => column.table === tableName);
-        let columnValue;
-        for (const obj of filteredColumns) {
-            const key = Object.keys(obj)[0];
-            if (obj[key] === columnName) {
-                columnValue = key;
-              break;
-            }
-          }
+        const selectedColumns = filteredColumns.map(obj => Object.keys(obj)[0]);
+        //  const tables = JSON.parse(group.table);
+        // if (!tables.includes(tableName)) {
+        //     throw new Error('Table not found in group');
+        // }
+        // const columnsData = JSON.parse(group.column);
+        // const filteredColumns = columnsData.filter(column => column.table === tableName);
+        // let columnValue;
+        // for (const obj of filteredColumns) {
+        //     const key = Object.keys(obj)[0];
+        //     if (obj[key] === columnName) {
+        //         columnValue = key;
+        //       break;
+        //     }
+        //   }
+
+
         let tableData = {};
         let tableRows;
-        
+
         if (tableName === "Admin") {
-            tableRows = await Admin.findAll({ attributes: [columnValue] });
+            tableRows = await Admin.findAll({ attributes: payload });
         } else if (tableName === "Employee") {
-            tableRows = await Employee.findAll({ attributes: [columnValue] });
+            tableRows = await Employee.findAll({ attributes: payload });
         } else if (tableName === "Manager") {
-            tableRows = await Manager.findAll({ attributes: [columnValue] });
+            tableRows = await Manager.findAll({ attributes: payload });
         }
-        
+
+        tableData[tableName] = tableRows;
+        return res.status(200).json({ tableData });
+    } catch (error) {
+        return res.status(400).json({ error: error.message });
+    }
+};
+
+exports.getSelectedColumnById = async (req, res) => {
+    try {
+        const { groupId, tableName } = req.params;
+        const payload = req.body
+        const group = await Group.findOne({ where: { id: groupId } });
+        if (!group) {
+            throw new Error('Group not found');
+        }
+
+        const tables = JSON.parse(group.table);
+        if (!tables.includes(tableName)) {
+            throw new Error('Table not found in group');
+        }
+        const columnsData = JSON.parse(group.column);
+        const filteredColumns = columnsData.filter(column => column.table === tableName);
+        const selectedColumns = filteredColumns.map(obj => Object.keys(obj)[0]);
+
+        let tableData = {};
+        let tableRows;
+
+        if (tableName === "Admin") {
+            tableRows = await Admin.findAll({
+                where: { id: { [Op.in]: payload.ids } },
+                attributes: payload.selectedColumnData ? payload.selectedColumnData : selectedColumns
+            });
+        } else if (tableName === "Employee") {
+            tableRows = await Employee.findAll({
+                where: { id: { [Op.in]: payload.ids } },
+                attributes: payload.selectedColumnData ? payload.selectedColumnData : selectedColumns
+            });
+        } else if (tableName === "Manager") {
+            tableRows = await Manager.findAll({
+                where: { id: { [Op.in]: payload.ids } },
+                attributes: payload.selectedColumnData ? payload.selectedColumnData : selectedColumns
+            });
+        }
+
         tableData[tableName] = tableRows;
         return res.status(200).json({ tableData });
     } catch (error) {
